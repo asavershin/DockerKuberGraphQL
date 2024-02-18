@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+
+#  backend-car:
+#    container_name: backend-note
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - db-car
+#    env_file:
+#      - .properties
+
+
+  db-car:
+    image: bitnami/postgresql:14
+    container_name: db-note
+    env_file:
+      - .properties
+    ports:
+      - "5440:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data/
+      - ./db-init/:/docker-entrypoint-initdb.d/
+
+volumes:
+  db_data:

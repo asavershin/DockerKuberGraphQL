@@ -1,0 +1,23 @@
+type Note {
+    noteId: ID
+    noteHeader: String
+    noteMessage: String
+    noteCreatedAt: String
+    noteLastUpdatedAt: String
+}
+
+input NoteInput {
+    noteHeader: String
+    noteMessage: String
+}
+
+type Query {
+    getNoteById(noteId: ID): Note
+    findAllNotes(pageNumber: ID, pageSize: ID): [Note]
+}
+
+type Mutation {
+    createNote(noteInput: NoteInput): Note
+    updateNoteById(noteId: ID, noteInput: NoteInput): Note
+    deleteNote(noteId: ID): Boolean
+}

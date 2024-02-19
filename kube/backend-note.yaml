@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-note
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-note
+  template:
+    metadata:
+      labels:
+        app: backend-note
+    spec:
+      containers:
+        - name: backend-note
+          image: bashmachok/note:1.0.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SERVER_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: SERVER_PORT
+                  name: credentials
+            - name: POSTGRESQL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: credentials
+                  key: POSTGRESQL_USERNAME
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: credentials
+                  key: POSTGRESQL_PASSWORD
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: credentials
+                  key: POSTGRESQL_DATABASE
+            - name: PORT_DB
+              valueFrom:
+                secretKeyRef:
+                  key: PORT_DB
+                  name: credentials
+            - name: POSTGRES_SCHEMA
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_SCHEMA
+                  name: credentials
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: credentials
+                  key: DB_HOST
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-note
+spec:
+  selector:
+    app: backend-note
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: LoadBalancer

@@ -25,21 +25,19 @@ public class NoteController {
     @PostMapping
     @MutationMapping
     public NoteDTO createNote(@Argument @Valid @RequestBody NoteDTO noteInput){
-        System.out.println("Hello");
-        System.out.println(noteInput);
         return noteMapper
                 .toDto(noteService
                         .createEntity(noteMapper.toEntity(noteInput)));
     }
 
-    @GetMapping("")
+    @GetMapping("/{noteId}")
     @QueryMapping
     public NoteDTO getNoteById(@Argument @PathVariable Long noteId) throws EntityNotFoundException {
         return noteMapper
                 .toDto(noteService.getEntityById(noteId));
     }
 
-    @PutMapping("")
+    @PutMapping("/{noteId}")
     @MutationMapping
     public NoteDTO updateNoteById(@Argument @PathVariable Long noteId,
                                   @Argument @Valid @RequestBody NoteDTO noteInput) throws EntityNotFoundException {
@@ -48,7 +46,7 @@ public class NoteController {
                         .updateEntity(noteMapper.toEntity(noteId, noteInput)));
     }
 
-    @DeleteMapping("")
+    @DeleteMapping("/{noteId}")
     @MutationMapping
     public void deleteNote(@Argument @PathVariable Long noteId) throws EntityNotFoundException {
         noteService.deleteEntityById(noteId);
@@ -56,7 +54,7 @@ public class NoteController {
 
     @GetMapping("/findAll")
     @QueryMapping
-    public List<NoteDTO> findAllNotes(@Argument @PathVariable Long pageNumber, @Argument @PathVariable Long pageSize){
+    public List<NoteDTO> findAllNotes(@Argument Long pageNumber, @Argument Long pageSize){
         return noteMapper.toDto(noteService.findAll(pageNumber, pageSize));
     }
 

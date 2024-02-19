@@ -20,6 +20,7 @@
         <containers.version>1.19.1</containers.version>
         <jooq.version>3.19.3</jooq.version>
         <graphql-java-kickstart.version>15.0.0</graphql-java-kickstart.version>
+        <springdoc.starter.version>2.1.0</springdoc.starter.version>
     </properties>
     <dependencies>
         <dependency>
@@ -28,17 +29,16 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jooq</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.1.0</version>
+            <version>${springdoc.starter.version}</version>
         </dependency>
 
 <!--        Jooq-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jooq</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq</artifactId>
@@ -54,7 +54,6 @@
             <artifactId>jooq-codegen</artifactId>
             <version>${jooq.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq-meta-extensions</artifactId>
@@ -75,30 +74,10 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>${spring.boot.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${containers.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>${containers.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -116,11 +95,10 @@
             <artifactId>spring-boot-starter-graphql</artifactId>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.graphql-java-kickstart</groupId>-->
-<!--            <artifactId>graphql-java-kickstart</artifactId>-->
-<!--            <version>${graphql-java-kickstart.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
 
 
     </dependencies>
@@ -168,32 +146,6 @@
             </plugin>
 
             <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.10</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                    </execution>
-
-                </executions>
-                <configuration>
-                    <includes>
-                        <include>asavershin/car/services/*</include>
-                    </includes>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-codegen-maven</artifactId>
                 <version>${jooq.version}</version>
@@ -209,15 +161,9 @@
                                 <database>
                                     <name>org.jooq.meta.extensions.ddl.DDLDatabase</name>
                                     <properties>
-                                        <!-- Specify the location of your SQL script.
-                                        You may use ant-style file matching, e.g. /path/**/to/*.sql
-                                        Where:
-                                        - ** matches any directory subtree
-                                        - * matches any number of characters in a directory / file name
-                                        - ? matches a single character in a directory / file name -->
                                         <property>
                                             <key>scripts</key>
-                                            <value>db-init/*create*.sql</value>
+                                            <value>src/main/resources/db/changelog/migrations/*create*.sql</value>
                                         </property>
                                         <property>
                                             <key>sort</key>
@@ -227,10 +173,6 @@
                                             <key>unqualifiedSchema</key>
                                             <value>none</value>
                                         </property>
-                                        <!-- The default name case for unquoted objects:
-                                        - as_is: unquoted object names are kept unquoted
-                                        - upper: unquoted object names are turned into upper case (most databases)
-                                        - lower: unquoted object names are turned into lower case (e.g. PostgreSQL) -->
                                         <property>
                                             <key>defaultNameCase</key>
                                             <value>lower</value>

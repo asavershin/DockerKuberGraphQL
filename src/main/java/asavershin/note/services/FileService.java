@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface FileService<T, K> {
     T saveFile(K file);
-    List<byte[]> getFiles(List<String> links);
+    byte[] getFile(String link);
     void deleteFiles(List<String> files);
 }

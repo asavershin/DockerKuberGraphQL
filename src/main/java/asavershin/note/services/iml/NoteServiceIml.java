@@ -2,9 +2,15 @@ package asavershin.note.services.iml;
 
 import asavershin.note.entities.NoteEntity;
 import asavershin.note.exceptions.EntityNotFoundException;
+import asavershin.note.exceptions.FileException;
+import asavershin.note.repositories.ImageRepository;
 import asavershin.note.repositories.NoteRepository;
+import asavershin.note.services.MinioService;
 import asavershin.note.services.NoteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,30 +20,38 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NoteServiceIml implements NoteService {
     private final NoteRepository noteRepository;
+    private final MinioService minioService;
+    private final ImageRepository imageRepository;
 
     @Override
     public NoteEntity createEntity(NoteEntity note){
         return noteRepository.insert(note);
     }
     @Override
-    public NoteEntity getEntityById(Long autoserviceId) throws EntityNotFoundException {
-        return noteRepository.findById(autoserviceId).orElseThrow(()->new EntityNotFoundException("Note not found with id: "+autoserviceId));
+    @Cacheable(value = "NoteService::getEntityById", key = "#noteId")
+    public NoteEntity getEntityById(Long noteId){
+        return noteRepository.findById(noteId).orElseThrow(()->new EntityNotFoundException("Note not found with id: "+noteId));
     }
     @Override
     @Transactional
-    public void deleteEntityById(Long autoserviceId) throws EntityNotFoundException {
-        if(!noteRepository.existById(autoserviceId)){
-            throw new EntityNotFoundException("Note not found with id: "+autoserviceId);
+    @CacheEvict(value = "NoteService::getEntityById", key = "#noteId")
+    public void deleteEntityById(Long noteId){
+        if(!noteRepository.existById(noteId)){
+            throw new EntityNotFoundException("Note not found with id: "+noteId);
         }
-        noteRepository.delete(autoserviceId);
+        var links = imageRepository.findLinksByNoteId(noteId);
+        noteRepository.deleteById(noteId);
+        minioService.deleteFiles(links);
+
     }
     @Override
     @Transactional
-    public NoteEntity updateEntity(NoteEntity authoservice) throws EntityNotFoundException {
-        if(!noteRepository.existById(authoservice.getNoteId())){
-            throw new EntityNotFoundException("Note not found with id: "+authoservice.getNoteId());
+    @CacheEvict(value = "NoteService::getEntityById", key = "#note.noteId")
+    public NoteEntity updateEntity(NoteEntity note){
+        if(!noteRepository.existById(note.getNoteId())){
+            throw new EntityNotFoundException("Note not found with id: "+note.getNoteId());
         }
-        return noteRepository.update(authoservice);
+        return noteRepository.update(note);
     }
 
     @Override

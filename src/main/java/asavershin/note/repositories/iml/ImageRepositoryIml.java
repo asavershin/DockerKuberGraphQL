@@ -32,12 +32,11 @@ public class ImageRepositoryIml implements ImageRepository {
     }
 
     @Override
-    public String deleteById(Long id) {
+    public ImageEntity deleteById(Long id) {
         return dslContext.deleteFrom(image)
                 .where(image.IMAGE_ID.eq(id))
-                .returning(image.IMAGE_LINK)
-                .fetch()
-                .map(r -> r.get(image.IMAGE_LINK))
+                .returning(image.fields())
+                .fetchInto(ImageEntity.class)
                 .get(0);
     }
 

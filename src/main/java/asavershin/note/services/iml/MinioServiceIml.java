@@ -1,6 +1,7 @@
 package asavershin.note.services.iml;
 
 import asavershin.note.configuration.MinIOProperties;
+import asavershin.note.dto.ImageByteResponse;
 import asavershin.note.exceptions.FileException;
 import asavershin.note.services.MinioService;
 import io.minio.*;
@@ -46,22 +47,18 @@ public class MinioServiceIml implements MinioService {
     }
 
     @Override
-    public List<byte[]> getFiles(final List<String> links) {
-        if (links.isEmpty()) {
-            return new ArrayList<>();
+    public byte[] getFile(final String link) {
+        if (link == null) {
+            throw new FileException("Image download failed: link is nullable");
         }
-        var files = new ArrayList<byte[]>();
-        for(var link : links){
-            try {
-                files.add(IOUtils.toByteArray(minioClient.getObject(GetObjectArgs.builder()
-                        .bucket(minioProperties.getBucket())
-                        .object(link)
-                        .build())));
-            } catch (Exception e) {
-                throw new FileException("Image download failed: " + e.getMessage());
-            }
+        try {
+            return IOUtils.toByteArray(minioClient.getObject(GetObjectArgs.builder()
+                    .bucket(minioProperties.getBucket())
+                    .object(link)
+                    .build()));
+        } catch (Exception e) {
+            throw new FileException("Image download failed: " + e.getMessage());
         }
-        return files;
     }
 
     @Override

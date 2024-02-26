@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class NoteController {
 
     @PostMapping
     @MutationMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public NoteDTO createNote(@Argument @Valid @RequestBody NoteDTO noteInput){
         return noteMapper
                 .toDto(noteService
@@ -32,15 +34,16 @@ public class NoteController {
 
     @GetMapping("/{noteId}")
     @QueryMapping
-    public NoteDTO getNoteById(@Argument @PathVariable Long noteId) throws EntityNotFoundException {
+    public NoteDTO getNoteById(@Argument @PathVariable Long noteId) {
         return noteMapper
                 .toDto(noteService.getEntityById(noteId));
     }
 
     @PutMapping("/{noteId}")
     @MutationMapping
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public NoteDTO updateNoteById(@Argument @PathVariable Long noteId,
-                                  @Argument @Valid @RequestBody NoteDTO noteInput) throws EntityNotFoundException {
+                                  @Argument @Valid @RequestBody NoteDTO noteInput){
         return noteMapper
                 .toDto(noteService
                         .updateEntity(noteMapper.toEntity(noteId, noteInput)));
@@ -48,7 +51,8 @@ public class NoteController {
 
     @DeleteMapping("/{noteId}")
     @MutationMapping
-    public void deleteNote(@Argument @PathVariable Long noteId) throws EntityNotFoundException {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteNote(@Argument @PathVariable Long noteId) {
         noteService.deleteEntityById(noteId);
     }
 

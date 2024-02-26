@@ -21,6 +21,7 @@
         <jooq.version>3.19.3</jooq.version>
         <graphql-java-kickstart.version>15.0.0</graphql-java-kickstart.version>
         <springdoc.starter.version>2.1.0</springdoc.starter.version>
+        <minio.version>8.5.7</minio.version>
     </properties>
     <dependencies>
         <dependency>
@@ -34,7 +35,7 @@
             <version>${springdoc.starter.version}</version>
         </dependency>
 
-<!--        Jooq-->
+<!--        JOOQ-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jooq</artifactId>
@@ -59,7 +60,12 @@
             <artifactId>jooq-meta-extensions</artifactId>
             <version>${jooq.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.simpleflatmapper</groupId>
+            <artifactId>sfm-jdbc</artifactId>
+            <version>3.11.2</version>
+        </dependency>
+<!--        JOOQ-->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -100,6 +106,20 @@
             <artifactId>liquibase-core</artifactId>
         </dependency>
 
+<!--        MINIO-->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
+        </dependency>
+<!--        MINIO-->
+
+<!--        REDIS-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+<!--        REDIS-->
 
     </dependencies>
 

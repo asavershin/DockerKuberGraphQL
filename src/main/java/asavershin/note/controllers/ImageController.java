@@ -1,13 +1,12 @@
 package asavershin.note.controllers;
 
+import asavershin.note.dto.ImageByteRequest;
 import asavershin.note.dto.ImageByteResponse;
-import asavershin.note.dto.ImageDTO;
-import asavershin.note.exceptions.EntityNotFoundException;
-import asavershin.note.exceptions.FileException;
 import asavershin.note.services.ImageService;
-import lombok.Getter;
+import asavershin.note.validators.ImageType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/image")
 @RequiredArgsConstructor
+@Validated
 public class ImageController {
     private final ImageService imageService;
 
@@ -23,13 +23,13 @@ public class ImageController {
     @ResponseStatus(HttpStatus.CREATED)
     public void uploadImage(
             @PathVariable final Long noteId,
-            @ModelAttribute final ImageDTO image ){
-        imageService.uploadFile(noteId, image.getImage());
+            @Validated @RequestPart("image") @ImageType final MultipartFile image ){
+        imageService.uploadFile(noteId, image);
     }
 
     @GetMapping("/links")
-    public List<ImageByteResponse> downloadImages(@RequestBody List<String> links){
-        return imageService.downloadImages(links);
+    public List<ImageByteResponse> downloadImages(@RequestBody ImageByteRequest request){
+        return imageService.downloadImages(request.getLinks());
     }
 
     @DeleteMapping("{imageId}")

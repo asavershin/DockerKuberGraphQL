@@ -39,7 +39,7 @@ public class NoteServiceIml implements NoteService {
         if(!noteRepository.existById(noteId)){
             throw new EntityNotFoundException("Note not found with id: "+noteId);
         }
-        var links = imageRepository.findLinksByNoteId(noteId);
+        var links = imageRepository.deleteAllByNoteId(noteId);
         noteRepository.deleteById(noteId);
         minioService.deleteFiles(links);
 

@@ -2,11 +2,14 @@ package asavershin.note.services.iml;
 
 import asavershin.note.dto.ImageByteResponse;
 import asavershin.note.entities.ImageEntity;
+import asavershin.note.entities.OperationEntity;
+import asavershin.note.entities.OperationType;
 import asavershin.note.exceptions.EntityNotFoundException;
 import asavershin.note.repositories.ImageRepository;
 import asavershin.note.repositories.NoteRepository;
 import asavershin.note.services.ImageService;
 import asavershin.note.services.MinioService;
+import asavershin.note.services.OperationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -24,6 +28,7 @@ public class ImageServiceIml implements ImageService {
     private final ImageRepository imageRepository;
     private final NoteRepository noteRepository;
     private final CacheManager cacheManager;
+    private final OperationService operationService;
 
     @Transactional
     @Override
@@ -39,11 +44,18 @@ public class ImageServiceIml implements ImageService {
                 minioService.saveFile(image),
                 noteId);
         try {
-            imageRepository.insert(imageEntity);
+            imageEntity = imageRepository.insert(imageEntity);
         } catch (Exception ex) {
             minioService.deleteFiles(Collections.singletonList(imageEntity.getImageLink()));
             throw ex;
         }
+        operationService.logOperation(
+                new OperationEntity(null,
+                        String.format("Upload image: %s", imageEntity),
+                        LocalDateTime.now(),
+                        OperationType.WRITE)
+
+        );
     }
 
     @Override

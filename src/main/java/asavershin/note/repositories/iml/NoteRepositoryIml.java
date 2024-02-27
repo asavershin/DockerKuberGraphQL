@@ -1,13 +1,12 @@
 package asavershin.note.repositories.iml;
 
 import asavershin.generated.package_.tables.Image;
+import asavershin.generated.package_.tables.NoteImage;
 import asavershin.note.entities.ImageEntity;
 import asavershin.note.entities.NoteEntity;
 import asavershin.note.repositories.NoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
-import org.simpleflatmapper.jdbc.JdbcMapper;
-import org.simpleflatmapper.jdbc.JdbcMapperFactory;
 import org.springframework.stereotype.Repository;
 import asavershin.generated.package_.tables.Note;
 
@@ -21,8 +20,7 @@ public class NoteRepositoryIml implements NoteRepository {
     private final DSLContext dslContext;
     private final Note note = Note.NOTE;
     private final Image image = Image.IMAGE;
-    JdbcMapper<NoteEntity> noteJdbcMapper =
-            JdbcMapperFactory.newInstance().addKeys("noteId").newMapper(NoteEntity.class);
+    private final NoteImage noteImage = NoteImage.NOTE_IMAGE;
 
     @Override
     public NoteEntity insert(NoteEntity noteEntity) {
@@ -55,7 +53,8 @@ public class NoteRepositoryIml implements NoteRepository {
                         image.IMAGE_LINK
                 )
                 .from(note)
-                .leftJoin(image).using(note.NOTE_ID)
+                .join(noteImage).using(note.NOTE_ID)
+                .leftJoin(image).using(image.IMAGE_ID)
                 .where(note.NOTE_ID.eq(id));
 
         var records = rs.collect(Collectors.toList());

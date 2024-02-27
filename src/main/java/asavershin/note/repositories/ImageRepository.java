@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ImageRepository{
     List<String> deleteAllByNoteId(Long noteId);
-    void insert(ImageEntity file);
+    ImageEntity insert(ImageEntity file);
     ImageEntity deleteById(Long id);
 
     List<String> findLinksByNoteId(Long noteId);

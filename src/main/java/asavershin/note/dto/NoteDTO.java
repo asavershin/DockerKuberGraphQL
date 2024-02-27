@@ -15,5 +15,6 @@ public class NoteDTO {
     private String noteCreatedAt;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String noteLastUpdatedAt;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<ImageDTO> images;
 }

@@ -1,13 +1,19 @@
 package asavershin.note.repositories.iml;
 
 import asavershin.generated.package_.tables.Image;
+import asavershin.generated.package_.tables.NoteImage;
+import asavershin.generated.package_.tables.records.ImageRecord;
+import asavershin.generated.package_.tables.records.NoteImageRecord;
 import asavershin.note.entities.ImageEntity;
 import asavershin.note.repositories.ImageRepository;
 import lombok.RequiredArgsConstructor;
-import org.jooq.DSLContext;
+import org.jooq.*;
+import org.jooq.Record;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
+import static org.jooq.impl.DSL.*;
 
 
 @Repository
@@ -15,21 +21,37 @@ import java.util.List;
 public class ImageRepositoryIml implements ImageRepository {
     private final DSLContext dslContext;
     private final Image image = Image.IMAGE;
+    private final NoteImage noteImage = NoteImage.NOTE_IMAGE;
+
     @Override
     public List<String> deleteAllByNoteId(Long noteId) {
-        return dslContext.deleteFrom(image)
-                .where(image.NOTE_ID.eq(noteId))
-                .returning(image.IMAGE_LINK)
+        var deletedImages = dslContext.deleteFrom(noteImage)
+                .where(noteImage.NOTE_ID.eq(noteId))
+                .returning(noteImage.IMAGE_ID)
                 .fetch()
-                .map(r -> r.get(image.IMAGE_LINK));
+                .map(NoteImageRecord::getImageId);
+
+        return dslContext.deleteFrom(image)
+                .where(image.IMAGE_ID.in(deletedImages))
+                .returning(field("image_link"))
+                .fetch()
+                .map(ImageRecord::getImageLink);
     }
 
     @Override
-    public void insert(ImageEntity imageEntity) {
-        dslContext.insertInto(image)
+    public ImageEntity insert(ImageEntity imageEntity) {
+        var newImage = dslContext.insertInto(image)
                 .set(dslContext.newRecord(image, imageEntity))
+                .returning()
+                .fetchInto(ImageEntity.class).get(0);
+
+        dslContext.insertInto(noteImage)
+                .set(noteImage.IMAGE_ID, newImage.getImageId())
+                .set(noteImage.NOTE_ID, imageEntity.getNoteId())
                 .execute();
+        return newImage;
     }
+
 
     @Override
     public ImageEntity deleteById(Long id) {
@@ -41,9 +63,10 @@ public class ImageRepositoryIml implements ImageRepository {
     }
 
     @Override
-    public List<String> findLinksByNoteId(Long noteId){
-        return dslContext.select(image.IMAGE_LINK).from(image)
-                .where(image.NOTE_ID.eq(noteId))
+    public List<String> findLinksByNoteId(Long noteId) {
+        return dslContext.select(image.IMAGE_LINK).from(noteImage)
+                .join(image).using(image.IMAGE_ID)
+                .where(noteImage.NOTE_ID.eq(noteId))
                 .fetchInto(String.class);
     }
 
@@ -54,38 +77,4 @@ public class ImageRepositoryIml implements ImageRepository {
                         .where(image.IMAGE_ID.eq(id))
         );
     }
-
-//    @Override
-//    public ImageEntity insert(ImageEntity imageEntity) {
-//        return Objects.requireNonNull(dslContext.insertInto(image)
-//                        .set(image.IMAGE_NAME, imageEntity.getImageName())
-//                        .set(image.IMAGE_SIZE, imageEntity.getImageSize())
-//                        .set(image.IMAGE_LINK, imageEntity.getImageLink())
-//                        .set(image.NOTE_ID, imageEntity.getImageId())
-//                        .returning()
-//                        .fetchOne())
-//                .into(ImageEntity.class);
-//    }
-//
-//    @Override
-//    public ImageEntity update(ImageEntity imageEntity){
-//        return Objects.requireNonNull(dslContext.update(image)
-//                        .set(image.IMAGE_NAME, imageEntity.getImageName())
-//                        .where(image.NOTE_ID.eq(imageEntity.getNoteId()))
-//                        .returning()
-//                        .fetchOne())
-//                .into(ImageEntity.class);
-//    }
-
-        //    @Override
-        //    public Optional<ImageEntity> findById(Long id){
-        //        return dslContext.selectFrom(image)
-        //                .where(i.NOTE_ID.eq(Math.toIntExact(id)))
-        //                .fetchOptionalInto(NoteEntity.class);
-        //    }
-        //
-        //    @Override
-        //    public Boolean delete(Long id) {
-        //        return null;
-        //    }
 }

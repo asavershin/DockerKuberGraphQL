@@ -24,7 +24,7 @@ services:
     ports:
       - "5440:5432"
     volumes:
-      - db-data:/var/lib/postgresql/data/
+      - db-note-data:/var/lib/postgresql/data/
 
   minio-note:
     image: minio/minio:latest
@@ -36,7 +36,7 @@ services:
       - '9090:9090'
       - '9000:9000'
     volumes:
-      - minio-data:/minio
+      - minio-note-data:/minio
 
   redis-note:
     image: redis:7.2-rc-alpine
@@ -46,9 +46,23 @@ services:
       - '6379:6379'
     command: redis-server --save 20 1 --loglevel debug --requirepass ${REDIS_PASSWORD}
     volumes:
-      - redis-data:/data
+      - redis-note-data:/data
+
+  mongodb-note:
+    image: mongo:7.0.5-jammy
+    container_name: mongodb-note
+    ports:
+      - 27017:27017
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongodb-note-data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d/
 
 volumes:
-  db-data:
-  redis-data:
-  minio-data:
+  db-note-data:
+  redis-note-data:
+  minio-note-data:
+  mongodb-note-data:

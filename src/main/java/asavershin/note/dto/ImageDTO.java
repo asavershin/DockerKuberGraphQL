@@ -14,8 +14,4 @@ public class ImageDTO {
     private Long imageSize;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String imageLink;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Long noteId;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private MultipartFile image;
 }

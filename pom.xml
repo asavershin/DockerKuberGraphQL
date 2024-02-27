@@ -35,6 +35,11 @@
             <version>${springdoc.starter.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
 <!--        JOOQ-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -59,11 +64,6 @@
             <groupId>org.jooq</groupId>
             <artifactId>jooq-meta-extensions</artifactId>
             <version>${jooq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.simpleflatmapper</groupId>
-            <artifactId>sfm-jdbc</artifactId>
-            <version>3.11.2</version>
         </dependency>
 <!--        JOOQ-->
         <dependency>

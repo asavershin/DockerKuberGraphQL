@@ -67,6 +67,13 @@ public class ImageServiceIml implements ImageService {
         var deletedImage = imageRepository.deleteById(id);
         minioService.deleteFiles(Collections.singletonList(deletedImage.getImageLink()));
         cacheManager.getCache("NoteService::getEntityById").evict(deletedImage.getNoteId());
+        operationService.logOperation(
+                new OperationEntity(null,
+                        String.format("Delete image : %s", deletedImage),
+                        LocalDateTime.now(),
+                        OperationType.DELETE)
+
+        );
     }
 
     @Override

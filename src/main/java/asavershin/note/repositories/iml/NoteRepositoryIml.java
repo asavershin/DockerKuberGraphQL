@@ -53,12 +53,13 @@ public class NoteRepositoryIml implements NoteRepository {
                         image.IMAGE_LINK
                 )
                 .from(note)
-                .join(noteImage).using(note.NOTE_ID)
+                .leftJoin(noteImage).using(note.NOTE_ID)
                 .leftJoin(image).using(image.IMAGE_ID)
                 .where(note.NOTE_ID.eq(id));
 
         var records = rs.collect(Collectors.toList());
-        List<ImageEntity> images = rs.fetchInto(ImageEntity.class);
+        List<ImageEntity> images = rs.fetchInto(ImageEntity.class).stream().filter(i -> i.getImageId() != null)
+                .toList();
         return Optional.ofNullable(NoteEntity.builder()
                 .noteId(records.get(0).get(note.NOTE_ID))
                 .noteHeader(records.get(0).get(note.NOTE_HEADER))

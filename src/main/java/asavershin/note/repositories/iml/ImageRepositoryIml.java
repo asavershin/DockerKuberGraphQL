@@ -24,7 +24,7 @@ public class ImageRepositoryIml implements ImageRepository {
     private final NoteImage noteImage = NoteImage.NOTE_IMAGE;
 
     @Override
-    public List<String> deleteAllByNoteId(Long noteId) {
+    public List<ImageEntity> deleteAllByNoteId(Long noteId) {
         var deletedImages = dslContext.deleteFrom(noteImage)
                 .where(noteImage.NOTE_ID.eq(noteId))
                 .returning(noteImage.IMAGE_ID)
@@ -33,9 +33,8 @@ public class ImageRepositoryIml implements ImageRepository {
 
         return dslContext.deleteFrom(image)
                 .where(image.IMAGE_ID.in(deletedImages))
-                .returning(field("image_link"))
-                .fetch()
-                .map(ImageRecord::getImageLink);
+                .returning()
+                .fetchInto(ImageEntity.class);
     }
 
     @Override

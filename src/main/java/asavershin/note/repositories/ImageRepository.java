@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface ImageRepository{
-    List<String> deleteAllByNoteId(Long noteId);
+    List<ImageEntity> deleteAllByNoteId(Long noteId);
     ImageEntity insert(ImageEntity file);
     ImageEntity deleteById(Long id);
 

@@ -12,6 +12,7 @@ import org.jooq.Record;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.jooq.impl.DSL.*;
 
@@ -38,7 +39,7 @@ public class ImageRepositoryIml implements ImageRepository {
     }
 
     @Override
-    public ImageEntity insert(ImageEntity imageEntity) {
+    public ImageEntity save(ImageEntity imageEntity) {
         var newImage = dslContext.insertInto(image)
                 .set(dslContext.newRecord(image, imageEntity))
                 .returning()
@@ -53,12 +54,12 @@ public class ImageRepositoryIml implements ImageRepository {
 
 
     @Override
-    public ImageEntity deleteById(Long id) {
-        return dslContext.deleteFrom(image)
+    public boolean deleteById(Long id) {
+        int deletedRows = dslContext.deleteFrom(image)
                 .where(image.IMAGE_ID.eq(id))
-                .returning(image.fields())
-                .fetchInto(ImageEntity.class)
-                .get(0);
+                .execute();
+
+        return deletedRows > 0;
     }
 
     @Override
@@ -74,6 +75,15 @@ public class ImageRepositoryIml implements ImageRepository {
         return dslContext.fetchExists(
                 dslContext.selectFrom(image)
                         .where(image.IMAGE_ID.eq(id))
+        );
+    }
+
+    @Override
+    public Optional<ImageEntity> findById(Long id) {
+        return Optional.ofNullable(
+                dslContext.selectFrom(image)
+                        .where(image.IMAGE_ID.eq(id))
+                        .fetchInto(ImageEntity.class).get(0)
         );
     }
 }

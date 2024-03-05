@@ -2,19 +2,16 @@ package asavershin.note.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
-public class NoteDTO {
+public class ImageDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Long noteId;
-    private String noteHeader;
-    private String noteMessage;
+    private Long imageId;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private String noteCreatedAt;
+    private String imageName;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private String noteLastUpdatedAt;
+    private Long imageSize;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private List<ImageDTO> images;
+    private String imageLink;
 }

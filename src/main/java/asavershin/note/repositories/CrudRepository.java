@@ -9,9 +9,9 @@ public interface CrudRepository<T, K> {
 
     T insert(T t);
 
-    T update(T t) throws EntityNotFoundException;
+    T update(T t);
 
-    Optional<T> findById(K id) throws EntityNotFoundException;
+    Optional<T> findById(K id);
 
-    Boolean delete(K id);
+    Boolean deleteById(K id);
 }

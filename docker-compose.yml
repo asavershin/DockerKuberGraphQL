@@ -11,19 +11,58 @@ services:
       - "8081:8081"
     depends_on:
       - db-note
+      - minio-note
     env_file:
-      - .properties
+      - .env
 
 
   db-note:
     image: bitnami/postgresql:14
     container_name: db-note
     env_file:
-      - .properties
+      - .env
     ports:
       - "5440:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data/
+      - db-note-data:/var/lib/postgresql/data/
+
+  minio-note:
+    image: minio/minio:latest
+    container_name: minio-note
+    env_file:
+      - .env
+    command: server ~/minio --console-address :9090
+    ports:
+      - '9090:9090'
+      - '9000:9000'
+    volumes:
+      - minio-note-data:/minio
+
+  redis-note:
+    image: redis:7.2-rc-alpine
+    restart: always
+    container_name: redis-note
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel debug --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-note-data:/data
+
+  mongodb-note:
+    image: mongo:7.0.5-jammy
+    container_name: mongodb-note
+    ports:
+      - 27017:27017
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongodb-note-data:/data/db
+      - ./mongo-init:/docker-entrypoint-initdb.d/
 
 volumes:
-  db_data:
+  db-note-data:
+  redis-note-data:
+  minio-note-data:
+  mongodb-note-data:

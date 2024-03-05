@@ -1,0 +1,2 @@
+INSERT INTO users (user_id, user_firstname, user_lastname, user_email, user_password, user_role)
+VALUES (DEFAULT, 'Admin', 'Admin', 'admin@gmail.com', '$2a$10$0TXkPhQIjlrib7mluDM0UOhdvUK4ricwn7OwSNBTyHIQ5ZuB1eIwm', 'ADMIN');

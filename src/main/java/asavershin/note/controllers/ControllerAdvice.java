@@ -2,6 +2,7 @@ package asavershin.note.controllers;
 
 import asavershin.note.exceptions.EntityNotFoundException;
 import asavershin.note.exceptions.ExceptionBody;
+import asavershin.note.exceptions.AuthException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,12 @@ public class ControllerAdvice {
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ExceptionBody handleEntityNotFoundException(EntityNotFoundException ex){
+        return new ExceptionBody(ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ExceptionBody handleTokenException(AuthException ex){
         return new ExceptionBody(ex.getMessage());
     }
 

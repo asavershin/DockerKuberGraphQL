@@ -17,4 +17,5 @@ public class NoteEntity implements Serializable {
     private LocalDateTime noteCreatedAt;
     private LocalDateTime noteLastUpdatedAt;
     private List<ImageEntity> images;
+    private Long userId;
 }

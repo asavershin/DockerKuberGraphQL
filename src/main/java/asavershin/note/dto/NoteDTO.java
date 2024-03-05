@@ -12,6 +12,8 @@ public class NoteDTO {
     private String noteHeader;
     private String noteMessage;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long userId;
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String noteCreatedAt;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String noteLastUpdatedAt;

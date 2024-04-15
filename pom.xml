@@ -21,6 +21,8 @@
         <jooq.version>3.19.3</jooq.version>
         <graphql-java-kickstart.version>15.0.0</graphql-java-kickstart.version>
         <springdoc.starter.version>2.1.0</springdoc.starter.version>
+        <minio.version>8.5.7</minio.version>
+        <jsonwebtoken.version>0.11.5</jsonwebtoken.version>
     </properties>
     <dependencies>
         <dependency>
@@ -34,7 +36,40 @@
             <version>${springdoc.starter.version}</version>
         </dependency>
 
-<!--        Jooq-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+<!--        SECURITY-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jsonwebtoken.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jsonwebtoken.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jsonwebtoken.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!--        SECURITY-->
+
+<!--        JOOQ-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jooq</artifactId>
@@ -59,7 +94,7 @@
             <artifactId>jooq-meta-extensions</artifactId>
             <version>${jooq.version}</version>
         </dependency>
-
+<!--        JOOQ-->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -100,6 +135,20 @@
             <artifactId>liquibase-core</artifactId>
         </dependency>
 
+<!--        MINIO-->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
+        </dependency>
+<!--        MINIO-->
+
+<!--        REDIS-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+<!--        REDIS-->
 
     </dependencies>
 

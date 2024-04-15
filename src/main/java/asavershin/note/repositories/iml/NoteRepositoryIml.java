@@ -4,6 +4,7 @@ import asavershin.generated.package_.tables.Image;
 import asavershin.generated.package_.tables.NoteImage;
 import asavershin.note.entities.ImageEntity;
 import asavershin.note.entities.NoteEntity;
+import asavershin.note.entities.UserEntity;
 import asavershin.note.repositories.NoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
@@ -23,10 +24,11 @@ public class NoteRepositoryIml implements NoteRepository {
     private final NoteImage noteImage = NoteImage.NOTE_IMAGE;
 
     @Override
-    public NoteEntity insert(NoteEntity noteEntity) {
+    public NoteEntity save(NoteEntity noteEntity) {
         return Objects.requireNonNull(dslContext.insertInto(note)
                         .set(note.NOTE_HEADER, noteEntity.getNoteHeader())
                         .set(note.NOTE_MESSAGE, noteEntity.getNoteMessage())
+                        .set(note.USER_ID, noteEntity.getUserId())
                         .returning()
                         .fetchOne())
                 .into(NoteEntity.class);
@@ -45,6 +47,15 @@ public class NoteRepositoryIml implements NoteRepository {
 
     @Override
     public Optional<NoteEntity> findById(Long id) {
+        return Optional.ofNullable(
+                dslContext.selectFrom(note)
+                        .where(note.NOTE_ID.eq(id))
+                        .fetchInto(NoteEntity.class).get(0)
+        );
+    }
+
+    @Override
+    public Optional<NoteEntity> findByIdWithImages(Long id) {
         var rs = dslContext.select(note.fields())
                 .select(
                         image.IMAGE_ID,
@@ -66,9 +77,20 @@ public class NoteRepositoryIml implements NoteRepository {
                 .noteMessage(records.get(0).get(note.NOTE_MESSAGE))
                 .noteCreatedAt(records.get(0).get(note.NOTE_CREATED_AT))
                 .noteLastUpdatedAt(records.get(0).get(note.NOTE_LAST_UPDATED_AT))
+                .userId(records.get(0).get(note.USER_ID))
                 .images(images)
                 .build());
-        }
+    }
+
+    @Override
+    public Optional<NoteEntity> findByImageId(Long id) {
+        return Optional.ofNullable(
+                dslContext.select(note.fields()).from(note)
+                        .join(noteImage).using(note.NOTE_ID)
+                        .where(noteImage.IMAGE_ID.eq(id))
+                        .fetchInto(NoteEntity.class).get(0)
+        );
+    }
 
     @Override
     public Boolean deleteById(Long id) {
